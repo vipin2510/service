@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head>
+    <title>Service Provider Lookup</title>
+</head>
+<body>
+    <h1>Service Provider Lookup</h1>
+    <form method="post">
+        <label for="numbers">Enter comma-separated numbers:</label><br>
+        <input type="text" id="numbers" name="numbers" style="width: 50%;"><br><br>
+        <input type="submit" value="Search">
+    </form>
+    <h2>Service Provider Details:</h2>
+    <p>{{ result|safe }}</p>
+</body>
+</html>
