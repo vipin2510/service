@@ -5,8 +5,12 @@ from phonenumbers import carrier
 app = Flask(__name__)
 
 @app.route("/", methods=["GET", "POST"])
-def index():
-    if request.method == "POST":
+def indverex():
+
+    if request.method == "GET":
+        return "hello"
+
+    elif request.method == "POST":
         numbers = request.form["numbers"].split(',')
         formatted_numbers = ['+91' + number.strip() if not number.startswith('+91') else number.strip() for number in numbers]
         output = ""
