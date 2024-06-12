@@ -11,6 +11,21 @@
         <input type="submit" value="Search">
     </form>
     <h2>Service Provider Details:</h2>
-    <p>{{ result|safe }}</p>
+    <table border="1" style="width: 50%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>Phone Number</th>
+                <th>Service Provider</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for number, provider in result %}
+            <tr>
+                <td>{{ number }}</td>
+                <td>{{ provider }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </body>
 </html>
