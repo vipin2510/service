@@ -20,7 +20,7 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 def index():
     result = []
     if request.method == "POST":
-        numbers = request.form["numbers"].strip().split('\n')
+        numbers = request.form["numbers"].split(',')
         formatted_numbers = ['+91' + number.strip() if not number.startswith('+91') else number.strip() for number in numbers]
         for number in formatted_numbers:
             try:
