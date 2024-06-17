@@ -1,18 +1,13 @@
 from flask import Flask, request, render_template
 from twilio.rest import Client
-from dotenv import load_dotenv
 import os
-
-load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 
 # Twilio credentials
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-
-if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
-    raise ValueError("Missing Twilio Account SID or Auth Token")
+# It's better to use environment variables for credentials
+TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', 'AC5cc1200a3f9f178a7464da21d62725fc')
+TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', 'eb06dd8e45b2e3c54c3b21df3d05db5a')
 
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
