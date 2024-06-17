@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, flash
 from twilio.rest import Client
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -17,6 +18,12 @@ if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
 
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+def parse_numbers(numbers_str):
+    # Use regex to split by commas, spaces, or line breaks
+    raw_numbers = re.split(r'[\s,]+', numbers_str.strip())
+    # Remove empty strings
+    return [num for num in raw_numbers if num]
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = []
@@ -25,8 +32,8 @@ def index():
         if not numbers:
             flash("Please enter phone numbers in the input section.")
         else:
-            numbers = numbers.split('\n')
-            formatted_numbers = ['+91' + number.strip() if not number.strip().startswith('+91') else number.strip() for number in numbers]
+            raw_numbers = parse_numbers(numbers)
+            formatted_numbers = ['+91' + number.strip() if not number.strip().startswith('+91') else number.strip() for number in raw_numbers]
             for number in formatted_numbers:
                 try:
                     lookup = client.lookups.phone_numbers(number).fetch(type=['carrier'])
