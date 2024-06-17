@@ -11,13 +11,16 @@ app = Flask(__name__)
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 
+if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
+    raise ValueError("Missing Twilio Account SID or Auth Token")
+
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = []
     if request.method == "POST":
-        numbers = request.form["numbers"].split(',')
+        numbers = request.form["numbers"].strip().split('\n')
         formatted_numbers = ['+91' + number.strip() if not number.startswith('+91') else number.strip() for number in numbers]
         for number in formatted_numbers:
             try:
