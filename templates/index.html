@@ -2,24 +2,23 @@
 <html>
 <head>
     <title>Service Provider Lookup</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        #numbers {
+            width: 50%;
+            height: 100px;
+        }
+    </style>
 </head>
 <body>
     <h1>Service Provider Lookup</h1>
-    <form method="post">
+    <form id="lookup-form" method="post">
         <label for="numbers">Enter phone numbers (comma, space, or newline separated):</label><br>
-        <textarea id="numbers" name="numbers" rows="4" style="width: 50%;"></textarea><br><br>
+        <textarea id="numbers" name="numbers"></textarea><br><br>
         <input type="submit" value="Search">
     </form>
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
     <h2>Service Provider Details:</h2>
+    <div id="message"></div>
     <table border="1" style="width: 50%; border-collapse: collapse;">
         <thead>
             <tr>
@@ -28,15 +27,43 @@
                 <th>Circle</th>
             </tr>
         </thead>
-        <tbody>
-            {% for number, provider, circle in result %}
-            <tr>
-                <td>{{ number }}</td>
-                <td>{{ provider }}</td>
-                <td>{{ circle }}</td>
-            </tr>
-            {% endfor %}
+        <tbody id="result-body">
         </tbody>
     </table>
+    <div id="progress">
+        <p>Progress: <span id="progress-count">0</span>/<span id="progress-total">0</span></p>
+        <p>ETA: <span id="eta">Calculating...</span></p>
+    </div>
+    <script>
+        $(document).ready(function() {
+            var interval;
+            $('#lookup-form').on('submit', function(event) {
+                event.preventDefault();
+                $('#message').text('Processing started. Please wait...');
+                $('#result-body').empty();
+                $.post('/', $(this).serialize(), function() {
+                    interval = setInterval(fetchProgress, 1000);
+                });
+            });
+
+            function fetchProgress() {
+                $.get('/progress', function(data) {
+                    $('#progress-count').text(data.current);
+                    $('#progress-total').text(data.total);
+                    if (data.current === data.total) {
+                        clearInterval(interval);
+                        $('#message').text('Processing complete.');
+                        $('#result-body').empty();
+                        for (var i = 0; i < data.result.length; i++) {
+                            $('#result-body').append('<tr><td>' + data.result[i][0] + '</td><td>' + data.result[i][1] + '</td><td>' + data.result[i][2] + '</td></tr>');
+                        }
+                    } else {
+                        var eta = ((data.total - data.current) * 0.5).toFixed(2);  // ETA in seconds
+                        $('#eta').text(eta + ' seconds');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
