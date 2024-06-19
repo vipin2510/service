@@ -50,6 +50,7 @@ def process_numbers(numbers):
         progress["result"].append(result)
         progress["current"] += 1
         time.sleep(0.5)  # Simulate delay
+    progress["result"].sort(key=lambda x: x[1])  # Sort by service provider
 
 @app.route("/", methods=["GET", "POST"])
 def index():
