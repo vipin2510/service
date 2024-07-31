@@ -1,20 +1,49 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Service Provider Lookup</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="data:,">
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
         #numbers {
-            width: 50%;
+            width: 100%;
+            max-width: 500px;
             height: 100px;
+            margin-bottom: 10px;
         }
         #result-table {
-            width: 50%;
+            width: 100%;
+            max-width: 500px;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         #result-table th, #result-table td {
-            border: 1px solid black;
-            padding: 5px;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #result-table th {
+            background-color: #f2f2f2;
+        }
+        #message {
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        #progress {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -46,29 +75,38 @@
             var interval;
             $('#lookup-form').on('submit', function(event) {
                 event.preventDefault();
-                $.post('/', $(this).serialize(), function(data) {
-                    $('#message').text(data.message);
-                    $('#result-body').empty();
-                    interval = setInterval(fetchProgress, 1000);
-                });
+                $.post('/', $(this).serialize())
+                    .done(function(data) {
+                        $('#message').text(data.message);
+                        $('#result-body').empty();
+                        interval = setInterval(fetchProgress, 1000);
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown) {
+                        $('#message').text('An error occurred: ' + textStatus + ' ' + errorThrown);
+                    });
             });
 
             function fetchProgress() {
-                $.get('/progress', function(data) {
-                    $('#progress-count').text(data.current);
-                    $('#progress-total').text(data.total);
-                    if (data.current === data.total) {
+                $.get('/progress')
+                    .done(function(data) {
+                        $('#progress-count').text(data.current);
+                        $('#progress-total').text(data.total);
+                        if (data.current === data.total) {
+                            clearInterval(interval);
+                            $('#message').text('Processing complete.');
+                            $('#result-body').empty();
+                            data.result.forEach(function(item) {
+                                $('#result-body').append('<tr><td>' + item[0] + '</td><td>' + item[1] + '</td></tr>');
+                            });
+                        } else {
+                            var eta = ((data.total - data.current) * 0.5).toFixed(2);
+                            $('#eta').text(eta + ' seconds');
+                        }
+                    })
+                    .fail(function(jqXHR, textStatus, errorThrown) {
+                        $('#message').text('An error occurred while fetching progress: ' + textStatus + ' ' + errorThrown);
                         clearInterval(interval);
-                        $('#message').text('Processing complete.');
-                        $('#result-body').empty();
-                        data.result.forEach(function(item) {
-                            $('#result-body').append('<tr><td>' + item[0] + '</td><td>' + item[1] + '</td></tr>');
-                        });
-                    } else {
-                        var eta = ((data.total - data.current) * 0.5).toFixed(2);  // ETA in seconds
-                        $('#eta').text(eta + ' seconds');
-                    }
-                });
+                    });
             }
         });
     </script>
