@@ -4,7 +4,6 @@ import re
 import requests
 from threading import Thread
 import time
- # Load environment variables from .env file
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Required for flashing messages
@@ -16,12 +15,11 @@ def parse_numbers(numbers_str):
     return [num for num in raw_numbers if num]
 
 def fetch_service_provider(number):
-    formatted_number =  number.strip() if not number.strip().startswith('+91') else number.strip()
+    formatted_number =  + number.strip() if not number.strip().startswith('+91') else number.strip()
     url = f"https://digitalapiproxy.paytm.com/v1/mobile/getopcirclebyrange?channel=web&version=2&number={formatted_number}&child_site_id=1&site_id=1&locale=en-in"
     try:
         response = requests.get(url)
         data = response.json()
-        print(data)
         operator = data.get('Operator', 'Unknown')
         circle = data.get('Circle', 'Unknown')
         return (formatted_number, operator, circle)
@@ -56,5 +54,6 @@ def index():
 def get_progress():
     return jsonify(progress)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ != "__main__":
+    # Vercel requires the app variable to be callable in the entry point
+    app = app
