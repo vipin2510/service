@@ -9,7 +9,7 @@ def parse_numbers(numbers_str):
     return [num for num in raw_numbers if num]
 
 def fetch_service_provider(number):
-    formatted_number =  + number.strip() if not number.strip().startswith('+91') else number.strip()
+    formatted_number =  number.strip() if not number.strip().startswith('+91') else number.strip()
     url = f"https://digitalapiproxy.paytm.com/v1/mobile/getopcirclebyrange?channel=web&version=2&number={formatted_number}&child_site_id=1&site_id=1&locale=en-in"
     try:
         response = requests.get(url)
