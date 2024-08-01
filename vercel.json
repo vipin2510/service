@@ -1,9 +1,8 @@
 {
-    "builds": [
-      { "src": "service.py", "use": "@vercel/python" }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "service.py" }
-    ]
-  }
-  
+  "builds": [
+    { "src": "service.py", "use": "@vercel/python" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "service.py" }
+  ]
+}

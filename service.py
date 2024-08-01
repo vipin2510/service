@@ -73,5 +73,12 @@ async def index():
         return await render_template("index.html", result=result, message="Processing complete.")
     return await render_template("index.html", result=[])
 
+@app.route("/progress", methods=["GET"])
+async def get_progress():
+    # This route can be used for progress tracking in the future.
+    return jsonify(progress)
+
+asgi_app = app  # Required for ASGI compatibility
+
 if __name__ == "__main__":
     app.run(debug=True)
